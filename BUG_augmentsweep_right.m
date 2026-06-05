@@ -13,30 +13,21 @@ function [MPS,Blocks, ROTmatrix_R] = BUG_augmentsweep_right(MPS,Blocks,dt,Model,
   right_orig = length(MPS.RightMatrices);
   RightMatrices_orig = MPS.RightMatrices;
   [MPS, Blocks] = move_orthogonality_center(MPS,Blocks,Model,+right_orig,bond_dim); 
-
   ROTmatrix_R = 1;
-
   for rightpos = 1:right_orig
     pos = Model.CL-rightpos+1;
     PSI0_lqr = tensorprod(MPS.LeftMatrices{end},MPS.CoreMatrix,3,1);
-    dim_l = size(PSI0_lqr,1);
-    dim_q = size(PSI0_lqr,2);
-    dim_r = size(PSI0_lqr,3);
-    PSI0_LR = reshape(PSI0_lqr,[dim_l, dim_q*dim_r]); 
     MPS.LeftMatrices(end) = [];
     Blocks.Left(end) = [];
-    RightMPSMatrix_full = permute(reshape(eye(dim_r*dim_q),[dim_q,dim_r,dim_r*dim_q]),[2,1,3]);
-    myRightBlock = renorm(Blocks.Right{rightpos},Model.MPO{pos},Model.MPOlogical{pos},RightMPSMatrix_full,"SIDE",'right');
+    myRightBlock = Blocks.Right{rightpos};
     myLeftBlock = Blocks.Left{end};
-
-    myHdotPsi = @(x) HdotPsi_LR(myLeftBlock,myRightBlock,x);
-    [PSInew_LR, N_iter] = expevolv_matrix_shifttrick(PSI0_LR,dt,myHdotPsi,options.ExpOrder);
+    myHdotPsi = @(x) HdotPsi_lqr(myLeftBlock,myRightBlock,Model.MPO{pos},Model.MPOtasktable{pos},x);
+    [PSInew_lqr, N_iter] = expevolv_matrix_shifttrick(PSI0_lqr,dt,myHdotPsi,options.ExpOrder);
     if options.KeepPSI0
-      RightMPSMatrix_new = orth_keepPSI0(PSI0_LR.',PSInew_LR.');
+      RightMPSMatrix_new = orth_keepPSI0(PSI0_lqr,PSInew_lqr);
     else
-      [RightMPSMatrix_new,~] = qr([PSI0_LR.',PSInew_LR.'],'econ');
+      [RightMPSMatrix_new,~] = tensor_qr(cat(1,PSI0_lqr,PSInew_lqr),[3,2],[1],'econ');
     end
-    RightMPSMatrix_new = permute(reshape(RightMPSMatrix_new,[dim_q,dim_r,size(RightMPSMatrix_new,2)]),[2,1,3]);
     CoreMatrix_new = tensorprod(PSI0_lqr,conj(RightMPSMatrix_new),[3,2],[1,2],NumDimensionsA=3);
     ROTmatrix_R_tmp = tensorprod(ROTmatrix_R,RightMatrices_orig{rightpos},2,1,NumDimensionsA=2);
     ROTmatrix_R = tensorprod(conj(RightMPSMatrix_new),ROTmatrix_R_tmp,[1,2],[1,2]);

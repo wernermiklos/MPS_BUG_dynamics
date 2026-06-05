@@ -28,6 +28,6 @@ function [XM_out,iter] = expevolv_matrix_shifttrick(XM_in,dt,HdotX, exporder)
       end
     end
   end
-  XM_out = exp(-1i*E*dt)*XM_out;   %fixed 2026.05.11
+  XM_out = exp(-1i*E*dt)*XM_out;
 end
 

@@ -8,18 +8,11 @@ arguments
   MPSmatrix_ket (:,:,:) double;   %block_in local block_out
   MPSmatrix_bra (:,:,:) double;   %block_in local block_out
   options.SIDE (1,1) string = 'left';
-  options.PRESUM (1,1) logical = false;
-  options.PRESUMMATRIX (:,:) = double.empty();
 end
   if ~strcmp(block_in.side, options.SIDE)
     error('side mismatch in renorm')
   end
-  if ~block_in.presummed   %if block in is not 'pre-summed', we call this.
-    block_in = presum_block(block_in);
-  end
   block_out = struct();
-  block_out.presummed = false;
-  block_out.presummatrix = options.PRESUMMATRIX;
   block_out.side = options.SIDE;
   switch options.SIDE
     case 'left'
@@ -56,9 +49,6 @@ end
       end
     otherwise
       error('left or right renormalization...')
-  end
-  if options.PRESUM
-    block_out = presum_block(block_out);
   end
 end
 
