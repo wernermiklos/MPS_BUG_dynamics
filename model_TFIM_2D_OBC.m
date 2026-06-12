@@ -72,23 +72,20 @@ function Model = internal_set_MPO_TFIM_2D_OBC(Model)
     end
   end
   %Erase unnecessary rows/columns from MPO at the last column of sites
-  pos = pos - Ly + 1;   %x = Lx, y = 1 here we do not need to erase anything
-  for y = 2:Ly
-    pos = pos + 1;
-    Model.MPO{pos}(:,end-(y-1):end-1) = [];
-    Model.MPO{pos}(end-(y-2):end-1,:) = [];
-  end
-  Model.MPO{pos}(:,2:end) = [];  % at the last site, only the Block Hamiltonian is needed.
-  for pos = 1:CL
-    Model.MPOlogical{pos} = cellfun(@(x) ~isempty(x),Model.MPO{pos});
-    [Model.MPOtasktable{pos}(:,1), Model.MPOtasktable{pos}(:,2)] = find(Model.MPOlogical{pos});
-  end
+  Model.MPO{end}(:,2:end) = [];  % at the last site, only the Block Hamiltonian is needed.
+  Model = MPO_setupLogical(Model);
 
-
-
-
-
-
-
+  % -- old (model specific) solution:
+  %pos = pos - Ly + 1;   %x = Lx, y = 1 here we do not need to erase anything
+  %for y = 2:Ly
+  %  pos = pos + 1;
+  %  Model.MPO{pos}(:,end-(y-1):end-1) = [];
+  %  Model.MPO{pos}(end-(y-2):end-1,:) = [];
+  %end
+  %Model.MPO{end}(:,2:end) = [];  % at the last site, only the Block Hamiltonian is needed.
+  %for pos = 1:CL
+  %  Model.MPOlogical{pos} = cellfun(@(x) ~isempty(x),Model.MPO{pos});
+  %  [Model.MPOtasktable{pos}(:,1), Model.MPOtasktable{pos}(:,2)] = find(Model.MPOlogical{pos});
+  %end
 end
 
