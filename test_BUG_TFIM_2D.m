@@ -1,8 +1,8 @@
 % ----- run parameters ----
 dt = 0.01;
 tmax = 1.0;
-Lx = 8;
-Ly = 8;
+Lx = 4;
+Ly = 4;
 CL = Lx*Ly;
 h = 2;
 S = 1/2;
