@@ -21,7 +21,7 @@ function [MPS,Blocks,ROTmatrix_L] = BUG_augmentsweep_left(MPS,Blocks,dt,Model, b
     myLeftBlock = Blocks.Left{pos};
     myRightBlock = Blocks.Right{end};
     myHdotPsi = @(x) HdotPsi_lqr(myLeftBlock,myRightBlock,Model.MPO{pos}, Model.MPOtasktable{pos},x);
-    [PSInew_lqr, N_iter] = expevolv_matrix_shifttrick(PSI0_lqr,dt,myHdotPsi,options.ExpOrder);
+    [PSInew_lqr, N_iter] = expevolv_matrix_Krylov(PSI0_lqr,dt,myHdotPsi,options.ExpOrder);
     if options.KeepPSI0
       LeftMPSMatrix_new = orth_keepPSI0(PSI0_lqr,PSInew_lqr);
     else

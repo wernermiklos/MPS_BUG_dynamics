@@ -11,7 +11,7 @@ function [MPS, Blocks, N_iter] = BUG_fullstep(MPS, Blocks, Model, dt, M)
   myRightBlock = Blocks.Right{end};
   myLeftBlock = Blocks.Left{end};
   myHdotPsi = @(x) HdotPsi_LR(myLeftBlock,myRightBlock,x);
-  [newcorematrix,N_iter] = expevolv_matrix_shifttrick(MPS.CoreMatrix,dt,myHdotPsi,NaN);
+  [newcorematrix,N_iter] = expevolv_matrix_Krylov(MPS.CoreMatrix,dt,myHdotPsi,NaN);
   %truncation
   [U,S,V] = svd(newcorematrix,'econ');
   if size(S,1) > M

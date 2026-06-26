@@ -7,6 +7,7 @@ CL = Lx*Ly;
 h = 2;
 S = 1/2;
 M=64;
+[~,~,Sz_loc] = SpinOperators(S);
 
 
 
@@ -66,8 +67,11 @@ end
 for t = dt:dt:tmax
   disp('----------')
   tic; [MPS, Blocks, N_iter] = BUG_fullstep(MPS,Blocks,Model,dt,M); toc;
-  disp([' Sz_BUG = ', num2str(tensorprod(Blocks.Left{end}.OP{end}*MPS.CoreMatrix, conj(MPS.CoreMatrix),[1,2],[1,2]))])
+  SzData = measure_local_expval(MPS,Sz_loc);
   disp(['t = ', num2str(t)]);
+  fprintf('<Sz> = ')
+  fprintf('%.3f ',SzData);
+  fprintf('\n')
 end
 
 
