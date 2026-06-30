@@ -27,7 +27,7 @@ function [XM_out,i] = expevolv_matrix_Krylov(XM_in,dt,HdotX, exporder)
     %fprintf('%d -- %.3e \n',i, norm_vNew)
     v{end+1} = vNew / norm_vNew;
     expT = expm(-1i*dt*T);
-    if dt*norm_vNew*abs(expT(i,1)) < EPSILON || norm_vNew < EPSILON || i > ITER_MAX
+    if abs(dt)*norm_vNew*abs(expT(i,1)) < EPSILON || norm_vNew < EPSILON || i > ITER_MAX
       keepgoing = false;
     end
   end
@@ -36,6 +36,7 @@ function [XM_out,i] = expevolv_matrix_Krylov(XM_in,dt,HdotX, exporder)
     XM_out = XM_out + expT(j,1)*v{j};
   end
   XM_out = norm0*XM_out;
+  fprintf('%d \n',i);
 end
 
 
